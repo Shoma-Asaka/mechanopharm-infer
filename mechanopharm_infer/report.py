@@ -1,0 +1,60 @@
+from __future__ import annotations
+
+from pathlib import Path
+import pandas as pd
+
+from .types import DiscriminationResult
+
+
+def _write_dataframe_block(f, title: str, df: pd.DataFrame | None) -> None:
+    f.write(f"{title}\n")
+    f.write("-" * len(title) + "\n")
+    if df is None or df.empty:
+        f.write("(none)\n\n")
+        return
+    f.write(df.to_string(index=False))
+    f.write("\n\n")
+
+
+def write_text_report(
+    outpath: str | Path,
+    result: DiscriminationResult,
+    reversal: dict[str, float | bool],
+    ec50_df: pd.DataFrame | None = None,
+    mopt_df: pd.DataFrame | None = None,
+    peak_df: pd.DataFrame | None = None,
+    final_df: pd.DataFrame | None = None,
+) -> None:
+    outpath = Path(outpath)
+    outpath.parent.mkdir(parents=True, exist_ok=True)
+
+    with outpath.open("w", encoding="utf-8") as f:
+        f.write("mechanopharm-infer report\n")
+        f.write("=========================\n\n")
+
+        f.write("Architecture discrimination\n")
+        f.write("---------------------------\n")
+        f.write(f"Label: {result.label}\n")
+        f.write(f"Confidence: {result.confidence}\n")
+        if result.notes:
+            f.write("Notes:\n")
+            for note in result.notes:
+                f.write(f"- {note}\n")
+        f.write("\n")
+
+        f.write("Evidence flags\n")
+        f.write("--------------\n")
+        for k, v in result.evidence_flags.items():
+            f.write(f"- {k}: {v}\n")
+        f.write("\n")
+
+        f.write("Mechanical sign reversal\n")
+        f.write("------------------------\n")
+        for k, v in reversal.items():
+            f.write(f"- {k}: {v}\n")
+        f.write("\n")
+
+        _write_dataframe_block(f, "EC50(m)", ec50_df)
+        _write_dataframe_block(f, "m*(c)", mopt_df)
+        _write_dataframe_block(f, "Peak metrics", peak_df)
+        _write_dataframe_block(f, "Final response", final_df)
