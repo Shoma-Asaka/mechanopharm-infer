@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "mechanopharm-infer"
+version = "0.0.1"
+description = "Inference toolkit for mechanopharmacology response-landscape analysis"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Shoma Asaka" }
+]
+dependencies = [
+  "pandas>=2.0",
+  "numpy>=1.24",
+  "matplotlib>=3.7",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0",
+]
+
+[project.scripts]
+mechanopharm-infer = "mechanopharm_infer.cli:main"
