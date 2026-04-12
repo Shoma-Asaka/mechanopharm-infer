@@ -1,0 +1,10 @@
+c,m_opt,optimum_index,is_edge,is_interior
+0.0,1.0,8,True,False
+0.25,1.0,8,True,False
+0.5,1.0,8,True,False
+0.75,1.0,8,True,False
+1.0,-1.0,0,True,False
+1.25,-1.0,0,True,False
+1.5,-1.0,0,True,False
+1.75,-1.0,0,True,False
+2.0,-1.0,0,True,False
