@@ -1,7 +1,0 @@
-stiffness,concentration,effect,replicate
-soft,0.0,0.10,1
-soft,0.5,0.18,1
-soft,1.0,0.26,1
-stiff,0.0,0.12,1
-stiff,0.5,0.40,1
-stiff,1.0,0.62,1
