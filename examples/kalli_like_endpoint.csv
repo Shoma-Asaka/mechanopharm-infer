@@ -1,0 +1,5 @@
+pressure,drug_concentration,late_apoptosis,replicate
+0mmHg,0.0,0.12,1
+0mmHg,1.0,0.38,1
+4mmHg,0.0,0.15,1
+4mmHg,1.0,0.24,1
