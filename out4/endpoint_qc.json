@@ -1,0 +1,13 @@
+{
+  "kind": "endpoint",
+  "passed": true,
+  "warnings": [],
+  "metrics": {
+    "n_unique_c": 3,
+    "n_unique_m": 2,
+    "min_n_per_condition": 1,
+    "median_n_per_condition": 1.0,
+    "grid_completeness": 1.0,
+    "dynamic_range": 0.6000000000000001
+  }
+}

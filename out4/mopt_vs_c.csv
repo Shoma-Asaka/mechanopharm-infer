@@ -1,0 +1,4 @@
+c,m_opt,optimum_index,is_edge,is_interior,prominence,neighbor_margin,response_span,is_reliable,warning,evidence_strength,n_mechanics_points
+0.1,0.5,1,True,False,0.0,,0.09999999999999998,False,Optimum is on the boundary.,weak,2
+0.5,0.5,1,True,False,0.0,,0.09999999999999998,False,Optimum is on the boundary.,weak,2
+1.0,0.0,0,True,False,0.0,,0.10000000000000009,False,Optimum is on the boundary.,weak,2
