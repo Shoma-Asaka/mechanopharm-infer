@@ -1,62 +1,61 @@
 # mechanopharm-infer
 
-Inference toolkit for mechanopharmacology response-landscape analysis.
+`mechanopharm-infer` is a lightweight inference toolkit for mechanopharmacology response-landscape analysis.
+
+It is designed as an actively developed research prototype for **data-facing, architecture-level inference** from endpoint and timecourse datasets. The current focus is conservative first-pass analysis: preprocessing, fingerprint extraction, uncertainty summaries, evidence assembly, and cautious architecture-class discrimination.
 
 ## Status
 
-`mechanopharm-infer` is currently an early research prototype for response-landscape analysis and architecture-class inference in mechanopharmacology. The package is intended to support method development, synthetic benchmarking, and early data-facing workflows. Its API, evidence rules, and decision logic may evolve substantially as the toolkit matures.
+This repository is an **early public prototype**.
 
-## Purpose
+It is intended for methods development around mechanopharmacology inference workflows, not for full mechanistic identification or production-grade model fitting. API details, evidence rules, and output formats may still evolve across pre-1.0 releases.
 
-`mechanopharm-infer` is a data-facing companion package for architecture-level inference from mechanopharmacology experiments.
+## What the package does
 
-The package is designed to:
-- load endpoint and timecourse datasets,
-- perform basic QC checks on endpoint and timecourse inputs,
-- summarize response landscapes over concentration and mechanical condition,
-- extract compact response fingerprints,
-- attach reliability and warning flags to key fingerprints,
-- perform conservative rule-based discrimination between minimal architecture classes,
-- generate lightweight reports and plots for exploratory analysis.
+The current toolkit supports the following workflow:
 
-## Relation to `mechanopharm-minimal`
+1. standardize endpoint and timecourse tables into a canonical schema,
+2. apply assay-aware preprocessing and response-direction normalization,
+3. perform QC and dataset diagnostics,
+4. extract response fingerprints such as `EC50(m)`, `m*(c)`, sign-reversal diagnostics, and timecourse-derived peak/final metrics,
+5. attach uncertainty summaries and warning metadata,
+6. assemble fingerprint evidence,
+7. make a conservative architecture-class call:
+   - `two_state_supported`
+   - `protected_state_suggested`
+   - `inconclusive`
 
-This package is distinct from `mechanopharm-minimal`.
+The package is intended as an **architecture-inference layer**, not as a full parameter-identification framework.
 
-- `mechanopharm-minimal` provides the **minimal reference implementation** for the accompanying theory paper.
-- `mechanopharm-infer` builds on that conceptual foundation and focuses on **data-facing inference workflows**.
+## Current scope
 
-## Current scope (v0.0.2)
+Included in the current prototype:
 
-Included:
-- endpoint CSV loading,
-- timecourse CSV loading,
-- endpoint and timecourse QC summaries,
-- replicate summarization,
-- response-matrix construction,
+- canonical schema handling for endpoint and timecourse CSV files,
+- assay metadata handling and response-direction normalization,
+- endpoint and timecourse QC,
+- endpoint and timecourse diagnostics,
 - reliability-aware `EC50(m)` extraction,
 - reliability-aware `m*(c)` extraction,
 - sign-reversal diagnostics,
-- peak-metric extraction,
-- final-response extraction,
-- delayed-protection metrics,
-- conservative rule-based architecture discrimination,
-- `inconclusive` handling for weak or low-information cases,
-- text report generation,
-- minimal summary plots,
-- end-to-end CLI analysis,
-- example datasets,
-- basic tests.
+- timecourse peak/final/delayed-protection fingerprints,
+- bootstrap summaries for selected fingerprints,
+- evidence-first architecture discrimination,
+- lightweight plotting,
+- literature-dataset adapters for the current three target papers,
+- synthetic dataset generators and benchmark utilities,
+- benchmark summary plots and reports,
+- CLI and Python API entry points,
+- examples, benchmark scripts, and tests.
 
 Not included:
+
 - full parameter inference,
 - Bayesian model comparison,
-- assay-specific calibration,
-- advanced uncertainty quantification,
-- experimental-design recommendation tools,
-- GUI tools,
-- system-specific preprocessing pipelines,
-- time-dependent mechanics / feedback extensions.
+- assay-specific calibration models,
+- high-dimensional mechanistic fitting,
+- GUI or web interface,
+- time-dependent mechanics / feedback model classes.
 
 ## Installation
 
@@ -66,81 +65,192 @@ For development use:
 pip install -e .[dev]
 ```
 
-## Minimal usage
+## Quick start
 
-Endpoint-only analysis:
+### Endpoint-only CLI run
 
 ```bash
 mechanopharm-infer \
   --endpoint examples/demo_endpoint.csv \
-  --out outputs/
+  --out outputs_demo
 ```
 
-Endpoint + timecourse analysis:
+### Endpoint + timecourse CLI run
 
 ```bash
 mechanopharm-infer \
   --endpoint examples/demo_endpoint.csv \
   --timecourse examples/demo_timecourse.csv \
-  --out outputs/
+  --out outputs_demo_tc
 ```
 
-## Input format
+### Synthetic benchmark utilities
 
-### Endpoint CSV
-Required columns:
-- `c`
-- `m`
-- `response`
+```bash
+python benchmarks/generate_synthetic.py
+python benchmarks/run_clean_benchmark.py
+python benchmarks/run_benchmark_suite.py
+```
+
+## Standard outputs
+
+A standard analysis produces some or all of the following, depending on whether timecourse input is provided:
+
+- `endpoint_summary.csv`
+- `ec50_vs_m.csv`
+- `mopt_vs_c.csv`
+- `fingerprint_evidence.csv`
+- `diagnostics.csv`
+- `ec50_bootstrap.csv`
+- `mopt_bootstrap.csv`
+- `peak_metrics.csv`
+- `final_response.csv`
+- `delayed_protection.csv`
+- `delayed_protection_bootstrap.csv`
+- `endpoint_qc.json`
+- `timecourse_qc.json`
+- `architecture_call.json`
+- `report.txt`
+- `endpoint_landscape.png`
+- `ec50_vs_m.png`
+- `mopt_vs_c.png`
+
+Benchmark utilities additionally write:
+
+- `benchmark_summary.csv`
+- `benchmark_report.json`
+- `benchmark_report.txt`
+- `benchmark_summary.png`
+
+## Canonical input schema
+
+### Endpoint table
+
+Required columns after standardization:
+
+- `c` : chemical input
+- `m` : mechanical input
+- `response` : endpoint response
 
 Optional columns:
-- `replicate`
 
-### Timecourse CSV
-Required columns:
+- `replicate`
+- `dataset_id`
+- `system`
+- `assay`
+- `condition_label`
+- `unit_concentration`
+- `unit_mechanics`
+- `batch`
+- `control_flag`
+
+Common aliases such as `concentration`, `mechanics`, and `effect` are accepted by the schema standardizer.
+
+### Timecourse table
+
+Required columns after standardization:
+
 - `time`
 - `c`
 - `m`
 - `value`
 
-Optional columns:
-- `replicate`
+Optional columns mirror the endpoint case where relevant.
 
-## Output
+## Assay metadata
 
-A standard analysis writes:
-- `endpoint_summary.csv`
-- `ec50_vs_m.csv`
-- `mopt_vs_c.csv`
-- `peak_metrics.csv` (if timecourse is provided)
-- `final_response.csv` (if timecourse is provided)
-- `delayed_protection.csv` (if timecourse is provided)
-- `endpoint_qc.json`
-- `timecourse_qc.json` (if timecourse is provided)
-- `endpoint_landscape.png`
-- `ec50_vs_m.png`
-- `mopt_vs_c.png`
-- `report.txt`
+The preprocessing layer can use assay metadata to orient and normalize responses.
 
-## Architecture discrimination
+Key metadata fields are:
 
-The current release performs conservative **rule-based** discrimination among:
-- `two_state_supported`
-- `protected_state_suggested`
-- `inconclusive`
+- `response_mode`
+  - `higher_is_stronger_effect`
+  - `lower_is_stronger_effect`
+- `normalization_mode`
+  - `raw`
+  - `control_subtracted`
+  - `vehicle_normalized`
+  - `min_max`
+  - `within_mechanics_min_max`
+- `baseline_definition`
 
-The toolkit is intended as a practical first-pass architecture-level workflow, not as a full mechanistic identifiability framework.
+This is useful when mixing apoptosis-like, viability-like, and survival-like readouts in a shared workflow.
+
+## Literature adapters
+
+The current release includes thin adapters for the three papers currently targeted in the methods workflow:
+
+- JEM TNBC stiffness dataset
+- Novak ovarian compression dataset
+- Kalli pancreatic compression/autophagy dataset
+
+These adapters are intentionally lightweight. Their role is to map paper-specific column names and condition labels into the common schema before passing the data into the shared inference engine.
+
+## Python API examples
+
+### Canonical loading and preprocessing
+
+```python
+from mechanopharm_infer import load_endpoint_csv, AssayMetadata, prepare_endpoint_data
+
+endpoint = load_endpoint_csv("examples/demo_endpoint.csv")
+meta = AssayMetadata(response_mode="higher_is_stronger_effect")
+prepared = prepare_endpoint_data(endpoint, assay_metadata=meta)
+```
+
+### Literature adapter
+
+```python
+from mechanopharm_infer import prepare_jem_endpoint
+
+endpoint = prepare_jem_endpoint("examples/jem_like_endpoint.csv")
+```
+
+### Synthetic benchmark generation
+
+```python
+from mechanopharm_infer import (
+    generate_two_state_endpoint,
+    SyntheticBenchmarkConfig,
+    run_synthetic_benchmark,
+)
+
+endpoint = generate_two_state_endpoint()
+config = SyntheticBenchmarkConfig(n_boot=50, random_seed=1)
+summary = run_synthetic_benchmark(config=config)
+```
+
+## Examples and benchmark scripts
+
+- `examples/README.md` describes the demo files and adapter-flavored example tables.
+- `examples/run_demo.py` runs a local endpoint or endpoint+timecourse demonstration.
+- `benchmarks/generate_synthetic.py` creates clean and noisy synthetic benchmark inputs.
+- `benchmarks/run_clean_benchmark.py` runs a small development-oriented synthetic benchmark.
+- `benchmarks/run_benchmark_suite.py` writes a benchmark summary table, JSON/TXT reports, and a summary plot.
+
+## Relation to `mechanopharm-minimal`
+
+This repository is distinct from `mechanopharm-minimal`.
+
+- `mechanopharm-minimal` provides a minimal reference implementation for the theory layer.
+- `mechanopharm-infer` focuses on data-facing fingerprint extraction, evidence assembly, uncertainty summaries, and cautious architecture-class inference.
 
 ## Current limitations
 
-This public release is an early working version (`v0.0.2`).
+This remains an early prototype release.
 
-The current implementation should be treated as a QC-aware exploratory workflow rather than a final inference framework. In particular:
-- evidence-flag definitions and discrimination thresholds are still being refined,
-- some fingerprints may be marked unreliable for sparse or weakly informative data,
+Important limitations:
+
+- evidence rules are still evolving,
+- sparse mechanics grids can limit interior-optimum assessment,
+- short time windows can limit delayed-protection assessment,
 - architecture calls are intentionally conservative,
-- future releases may change API details and decision logic.
+- future releases may change API details, evidence weighting, and file outputs.
 
-## Development notes
+## Citation and code availability
 
-This release is intended as a pre-methods-paper prototype baseline. A future `v0.1.0` should correspond to a more stable methods-paper-ready public baseline with broader validation, stronger uncertainty handling, and more mature documentation.
+If you use this repository in academic work, please cite the corresponding archived software release for the version you used. A manuscript-specific release and DOI should be used whenever available.
+
+## License
+
+MIT License
