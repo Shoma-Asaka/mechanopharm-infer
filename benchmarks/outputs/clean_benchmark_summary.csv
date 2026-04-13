@@ -1,0 +1,4 @@
+dataset,truth,used_timecourse,label,confidence,sign_reversal_detected,interior_optimum_detected,moving_optimum_detected,transient_peak_detected,delayed_protection_detected
+two_state_endpoint_clean,two_state,False,two_state_supported,moderate,True,False,True,False,False
+protected_state_endpoint_clean_endpoint_only,protected_state,False,protected_state_suggested,moderate,True,True,True,False,False
+protected_state_clean_with_timecourse,protected_state,True,protected_state_suggested,high,True,True,True,True,True
