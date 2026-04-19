@@ -176,16 +176,6 @@ Key metadata fields are:
 
 This is useful when mixing apoptosis-like, viability-like, and survival-like readouts in a shared workflow.
 
-## Literature adapters
-
-The current release includes thin adapters for the three papers currently targeted in the methods workflow:
-
-- JEM TNBC stiffness dataset
-- Novak ovarian compression dataset
-- Kalli pancreatic compression/autophagy dataset
-
-These adapters are intentionally lightweight. Their role is to map paper-specific column names and condition labels into the common schema before passing the data into the shared inference engine.
-
 ## Python API examples
 
 ### Canonical loading and preprocessing
@@ -196,14 +186,6 @@ from mechanopharm_infer import load_endpoint_csv, AssayMetadata, prepare_endpoin
 endpoint = load_endpoint_csv("examples/demo_endpoint.csv")
 meta = AssayMetadata(response_mode="higher_is_stronger_effect")
 prepared = prepare_endpoint_data(endpoint, assay_metadata=meta)
-```
-
-### Literature adapter
-
-```python
-from mechanopharm_infer import prepare_jem_endpoint
-
-endpoint = prepare_jem_endpoint("examples/jem_like_endpoint.csv")
 ```
 
 ### Synthetic benchmark generation
