@@ -12,4 +12,4 @@ This directory contains small development-facing examples for `mechanopharm-infe
   - simple script that runs the CLI analysis pipeline on the demo files.
 
 These files are intentionally small and are not meant to represent complete literature datasets.
-Their purpose is to make installation, adapter behavior, and output inspection easier during early development.
+Their purpose is to make installation, CLI execution, Python API usage, and output inspection easier during early development.
