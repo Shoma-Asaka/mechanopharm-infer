@@ -1,4 +1,4 @@
-cff-version: 0.1.1
+cff-version: 0.1.2
 message: "If you use this repository before the paper is formally published, please cite the specific archived software release. After journal publication, please cite the final published article as the primary scholarly reference."
 title: "mechanopharm-infer"
 abstract: "Lightweight inference toolkit for mechanopharmacology response-landscape analysis, fingerprint extraction, and minimal architecture discrimination."
@@ -8,17 +8,17 @@ authors:
     given-names: "Shoma"
     affiliation: "Faculty of Medical Sciences, University of Fukui"
 repository-code: "https://github.com/Shoma-Asaka/mechanopharm-infer"
-url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.1.1"
+url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.1.2"
 doi: "10.5281/zenodo.19539760"
 license: "MIT"
-version: "0.1.1"
+version: "0.1.2"
 preferred-citation:
   type: software
   authors:
     - family-names: "Asaka"
       given-names: "Shoma"
   title: "mechanopharm-infer"
-  version: "0.1.1"
+  version: "0.1.2"
   doi: "10.5281/zenodo.19539760"
-  url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.1.1"
+  url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.1.2"
   year: 2026
