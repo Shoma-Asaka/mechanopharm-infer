@@ -42,7 +42,6 @@ Included in the current prototype:
 - bootstrap summaries for selected fingerprints,
 - evidence-first architecture discrimination,
 - lightweight plotting,
-- literature-dataset adapters for the current three target papers,
 - synthetic dataset generators and benchmark utilities,
 - benchmark summary plots and reports,
 - CLI and Python API entry points,
@@ -204,7 +203,7 @@ summary = run_synthetic_benchmark(config=config)
 
 ## Examples and benchmark scripts
 
-- `examples/README.md` describes the demo files and adapter-flavored example tables.
+- `examples/README.md` describes the demo files used for local CLI and Python API checks.
 - `examples/run_demo.py` runs a local endpoint or endpoint+timecourse demonstration.
 - `benchmarks/generate_synthetic.py` creates clean and noisy synthetic benchmark inputs.
 - `benchmarks/run_clean_benchmark.py` runs a small development-oriented synthetic benchmark.
