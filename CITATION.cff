@@ -1,7 +1,7 @@
 cff-version: 0.2.0
 message: "If you use this repository before the paper is formally published, please cite the specific archived software release. After journal publication, please cite the final published article as the primary scholarly reference."
 title: "mechanopharm-infer"
-abstract: "Lightweight inference toolkit for mechanopharmacology response-landscape analysis, fingerprint extraction, and minimal architecture discrimination."
+abstract: "CLI and Streamlit web app for mechanopharmacology response-landscape analysis, fingerprint extraction, and minimal architecture discrimination."
 type: software
 authors:
   - family-names: "Asaka"
