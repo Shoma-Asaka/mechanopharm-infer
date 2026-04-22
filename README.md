@@ -53,7 +53,7 @@ Not included:
 - Bayesian model comparison,
 - assay-specific calibration models,
 - high-dimensional mechanistic fitting,
-- GUI or web interface,
+- production-grade hosted web service beyond the Streamlit MVP,
 - time-dependent mechanics / feedback model classes.
 
 ## Installation
