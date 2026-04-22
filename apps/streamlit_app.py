@@ -66,6 +66,14 @@ with st.sidebar:
     random_seed = st.number_input("Random seed", min_value=0, value=0, step=1)
 
     run = st.button("Run analysis", type="primary")
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### Citation")
+    st.sidebar.markdown(
+    "If you use this software, please cite the archived release:"
+)
+    st.sidebar.markdown(
+    "[mechanopharm-infer v0.2.0](https://doi.org/10.5281/zenodo.19690760)"
+)
 
 st.markdown(
     """
