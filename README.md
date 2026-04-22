@@ -238,7 +238,6 @@ https://mechanopharm-infer.streamlit.app/
 The app supports browser-based execution with bundled demo data or user-uploaded endpoint/timecourse CSV files.
 
 Archived release:
-
 https://doi.org/10.5281/zenodo.19690760
 
 ## Relation to `mechanopharm-minimal`
