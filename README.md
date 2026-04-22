@@ -232,9 +232,13 @@ summary = run_synthetic_benchmark(config=config)
 ## Web app
 
 A Streamlit-based MVP of mechanopharm-infer v0.2.0 is available here:
+
 https://mechanopharm-infer.streamlit.app/
+
 The app supports browser-based execution with bundled demo data or user-uploaded endpoint/timecourse CSV files.
+
 Archived release:
+
 https://doi.org/10.5281/zenodo.19690760
 
 ## Relation to `mechanopharm-minimal`
