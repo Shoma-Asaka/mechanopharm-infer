@@ -91,6 +91,26 @@ python benchmarks/run_clean_benchmark.py
 python benchmarks/run_benchmark_suite.py
 ```
 
+### Streamlit web app MVP
+
+Run the browser-based MVP locally from a source checkout:
+
+```bash
+pip install -r requirements.txt
+pip install -e .
+streamlit run apps/streamlit_app.py
+```
+
+The app supports:
+
+- bundled demo data from `examples/`,
+- uploaded endpoint CSV files,
+- optional uploaded timecourse CSV files,
+- browser-based display of architecture calls, reports, figures, and tables,
+- downloadable output bundles.
+
+For Streamlit Community Cloud deployment, use `apps/streamlit_app.py` as the app entrypoint.
+
 ## Standard outputs
 
 A standard analysis produces some or all of the following, depending on whether timecourse input is provided:
