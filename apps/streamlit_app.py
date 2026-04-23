@@ -23,7 +23,7 @@ DEFAULT_ENDPOINT = ROOT / "examples" / "demo_endpoint.csv"
 DEFAULT_TIMECOURSE = ROOT / "examples" / "demo_timecourse.csv"
 
 
-st.set_page_config(page_title=APP_TITLE, page_icon="🧪", layout="wide")
+st.set_page_config(page_title=APP_TITLE, page_icon="📈", layout="wide")
 
 
 def _save_uploaded_file(uploaded_file, path: Path) -> None:
@@ -87,7 +87,7 @@ with st.sidebar:
     st.sidebar.markdown("### Citation")
     st.sidebar.markdown("If you use this software, please cite the archived release:")
     st.sidebar.markdown(
-        "[mechanopharm-infer v0.2.0](https://doi.org/10.5281/zenodo.19690760)"
+        "[mechanopharm-infer v0.2.2](https://doi.org/10.5281/zenodo.19539760)"
     )
 
 st.markdown(
