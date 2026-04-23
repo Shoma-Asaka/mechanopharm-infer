@@ -41,9 +41,26 @@ def _read_json(path: Path):
     return json.loads(path.read_text(encoding="utf-8"))
 
 
-def _show_csv(path: Path, title: str) -> None:
+def _load_table(path: Path) -> pd.DataFrame:
+    df = pd.read_csv(path)
+    df = df.where(pd.notnull(df), "")
+
+    for col in df.columns:
+        if pd.api.types.is_float_dtype(df[col]):
+            df[col] = df[col].map(lambda x: round(x, 6) if x != "" else "")
+
+    return df
+
+
+def _show_table(path: Path, title: str, *, height: int | None = None) -> None:
     st.markdown(f"### {title}")
-    st.dataframe(pd.read_csv(path), use_container_width=True)
+    df = _load_table(path)
+    st.dataframe(
+        df,
+        use_container_width=True,
+        hide_index=True,
+        height=height,
+    )
 
 
 st.title(APP_TITLE)
@@ -150,8 +167,25 @@ if run:
                 st.json(arch)
 
         if report_path.exists():
-            st.subheader("Text report")
-            st.text(report_path.read_text(encoding="utf-8"))
+            with st.expander("Raw text report", expanded=False):
+                st.code(report_path.read_text(encoding="utf-8"), language=None)
+
+        st.subheader("Structured results")
+
+        structured_tables = [
+            ("fingerprint_evidence.csv", "Fingerprint evidence", 320),
+            ("diagnostics.csv", "Diagnostics", 360),
+            ("ec50_vs_m.csv", "EC50(m)", 220),
+            ("mopt_vs_c.csv", "m*(c)", 220),
+            ("peak_metrics.csv", "Peak metrics", 220),
+            ("final_response.csv", "Final response", 220),
+            ("delayed_protection.csv", "Delayed protection metrics", 220),
+        ]
+
+        for filename, title, height in structured_tables:
+            path = outdir / filename
+            if path.exists():
+                _show_table(path, title, height=height)
 
         st.subheader("Figures")
         fig_cols = st.columns(3)
@@ -163,7 +197,7 @@ if run:
             if fig_path.exists():
                 col.image(str(fig_path), caption=filename, use_container_width=True)
 
-        with st.expander("Tables", expanded=False):
+        with st.expander("All tables", expanded=False):
             for filename, title in [
                 ("endpoint_summary.csv", "Endpoint summary"),
                 ("ec50_vs_m.csv", "EC50 vs mechanics"),
@@ -176,7 +210,7 @@ if run:
             ]:
                 path = outdir / filename
                 if path.exists():
-                    _show_csv(path, title)
+                    _show_table(path, title, height=280)
 
         st.subheader("Downloads")
         zip_path = tmpdir / "mechanopharm_outputs.zip"
