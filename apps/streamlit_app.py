@@ -125,31 +125,31 @@ if run:
         report_path = outdir / "report.txt"
 
        if arch_path.exists():
-    arch = _read_json(arch_path)
+           arch = _read_json(arch_path)
+           
+           call_value = arch.get("call", "NA")
+           confidence_value = arch.get("confidence", "NA")
+           warnings_list = arch.get("warnings", []) or []
+           
+           left, mid, right = st.columns([5, 2, 1])
+           
+           with left:
+               st.markdown("**Architecture call**")
+               st.code(str(call_value), language=None)
+        
+           with mid:
+               st.metric("Confidence", confidence_value)
 
-    call_value = arch.get("call", "NA")
-    confidence_value = arch.get("confidence", "NA")
-    warnings_list = arch.get("warnings", []) or []
+           with right:
+               st.metric("Warnings", len(warnings_list))
 
-    left, mid, right = st.columns([5, 2, 1])
+           if warnings_list:
+               with st.expander("Warnings details", expanded=False):
+                   for i, warning in enumerate(warnings_list, start=1):
+                       st.markdown(f"{i}. {warning}")
 
-    with left:
-        st.markdown("**Architecture call**")
-        st.code(str(call_value), language=None)
-
-    with mid:
-        st.metric("Confidence", confidence_value)
-
-    with right:
-        st.metric("Warnings", len(warnings_list))
-
-    if warnings_list:
-        with st.expander("Warnings details", expanded=False):
-            for i, warning in enumerate(warnings_list, start=1):
-                st.markdown(f"{i}. {warning}")
-
-    with st.expander("Architecture call JSON", expanded=False):
-        st.json(arch)
+           with st.expander("Architecture call JSON", expanded=False):
+               st.json(arch)
 
         if report_path.exists():
             st.subheader("Text report")
