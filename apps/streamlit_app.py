@@ -68,12 +68,10 @@ with st.sidebar:
     run = st.button("Run analysis", type="primary")
     st.sidebar.markdown("---")
     st.sidebar.markdown("### Citation")
+    st.sidebar.markdown("If you use this software, please cite the archived release:")
     st.sidebar.markdown(
-    "If you use this software, please cite the archived release:"
-)
-    st.sidebar.markdown(
-    "[mechanopharm-infer v0.2.0](https://doi.org/10.5281/zenodo.19690760)"
-)
+        "[mechanopharm-infer v0.2.0](https://doi.org/10.5281/zenodo.19690760)"
+    )
 
 st.markdown(
     """
@@ -124,32 +122,32 @@ if run:
         arch_path = outdir / "architecture_call.json"
         report_path = outdir / "report.txt"
 
-    if arch_path.exists():
-        arch = _read_json(arch_path)
-           
-        call_value = arch.get("call", "NA")
-        confidence_value = arch.get("confidence", "NA")
-        warnings_list = arch.get("warnings", []) or []
-           
-        left, mid, right = st.columns([5, 2, 1])
-           
-        with left:
-            st.markdown("**Architecture call**")
-            st.code(str(call_value), language=None)
-        
-        with mid:
-            st.metric("Confidence", confidence_value)
+        if arch_path.exists():
+            arch = _read_json(arch_path)
 
-        with right:
-            st.metric("Warnings", len(warnings_list))
+            call_value = arch.get("call", "NA")
+            confidence_value = arch.get("confidence", "NA")
+            warnings_list = arch.get("warnings", []) or []
 
-        if warnings_list:
-            with st.expander("Warnings details", expanded=False):
-                for i, warning in enumerate(warnings_list, start=1):
-                    st.markdown(f"{i}. {warning}")
+            left, mid, right = st.columns([5, 2, 1])
 
-        with st.expander("Architecture call JSON", expanded=False):
-            st.json(arch)
+            with left:
+                st.markdown("**Architecture call**")
+                st.code(str(call_value), language=None)
+
+            with mid:
+                st.metric("Confidence", confidence_value)
+
+            with right:
+                st.metric("Warnings", len(warnings_list))
+
+            if warnings_list:
+                with st.expander("Warnings details", expanded=False):
+                    for i, warning in enumerate(warnings_list, start=1):
+                        st.markdown(f"{i}. {warning}")
+
+            with st.expander("Architecture call JSON", expanded=False):
+                st.json(arch)
 
         if report_path.exists():
             st.subheader("Text report")
