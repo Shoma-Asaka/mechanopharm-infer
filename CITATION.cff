@@ -1,4 +1,4 @@
-cff-version: 0.2.2
+cff-version: 1.2.0
 message: "If you use this repository before the paper is formally published, please cite the specific archived software release. After journal publication, please cite the final published article as the primary scholarly reference."
 title: "mechanopharm-infer"
 abstract: "CLI and Streamlit web app for mechanopharmacology response-landscape analysis, fingerprint extraction, and minimal architecture discrimination."
@@ -7,6 +7,7 @@ authors:
   - family-names: "Asaka"
     given-names: "Shoma"
     affiliation: "Faculty of Medical Sciences, University of Fukui"
+    orcid: "https://orcid.org/0009-0004-4030-2051"
 repository-code: "https://github.com/Shoma-Asaka/mechanopharm-infer"
 url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.2.2"
 doi: "10.5281/zenodo.19539760"
@@ -17,6 +18,7 @@ preferred-citation:
   authors:
     - family-names: "Asaka"
       given-names: "Shoma"
+      orcid: "https://orcid.org/0009-0004-4030-2051"
   title: "mechanopharm-infer"
   version: "0.2.2"
   doi: "10.5281/zenodo.19539760"
