@@ -231,7 +231,7 @@ summary = run_synthetic_benchmark(config=config)
 
 ## Web app
 
-A Streamlit-based MVP of mechanopharm-infer v0.2.0 is available here:
+A Streamlit-based MVP of mechanopharm-infer v0.2.2 is available here:
 
 https://mechanopharm-infer.streamlit.app/
 
