@@ -1,3 +1,0 @@
-m,ec50,is_monotone,has_sufficient_range,is_reliable,warning,halfmax_response,response_min,response_max,evidence_strength,n_points,dynamic_range,monotonicity_score
-0.0,0.5,True,True,True,,0.5,0.2,0.8,moderate,3,0.6000000000000001,1.0
-0.5,0.3666666666666667,True,True,True,,0.5,0.3,0.7,moderate,3,0.39999999999999997,1.0

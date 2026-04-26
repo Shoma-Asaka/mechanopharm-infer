@@ -1,9 +1,0 @@
-fingerprint,supported,evidence_strength,source,notes
-shift,True,moderate,EC50(m),Mechanically shifted dose-response family.
-sign_reversal,True,moderate,mechanical_sign_reversal,Concentration-dependent sign change in mechanical sensitivity.
-interior_optimum,False,weak,m*(c),Interior mechanical optimum over response surface.
-moving_optimum,False,none,m*(c),Mechanical optimum varies across concentration.
-transient_peak,True,not_assessable,"Epeak(c,m)",Non-terminal transient amplification before relaxation.
-delayed_protection,True,not_assessable,Epeak/E∞,Later attenuation consistent with protected-state-like dynamics.
-endpoint_qc,True,strong,QC,Endpoint grid quality gate.
-timecourse_qc,True,strong,QC,Timecourse quality gate.
