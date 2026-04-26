@@ -9,10 +9,10 @@ authors:
     affiliation: "Faculty of Medical Sciences, University of Fukui"
     orcid: "https://orcid.org/0009-0004-4030-2051"
 repository-code: "https://github.com/Shoma-Asaka/mechanopharm-infer"
-url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.2.2"
+url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.2.3"
 doi: "10.5281/zenodo.19539760"
 license: "MIT"
-version: "0.2.2"
+version: "0.2.3"
 preferred-citation:
   type: software
   authors:
@@ -20,7 +20,7 @@ preferred-citation:
       given-names: "Shoma"
       orcid: "https://orcid.org/0009-0004-4030-2051"
   title: "mechanopharm-infer"
-  version: "0.2.2"
+  version: "0.2.3"
   doi: "10.5281/zenodo.19539760"
-  url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.2.2"
+  url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.2.3"
   year: 2026
