@@ -21,18 +21,18 @@ support in the CLI.  See `GLOSSARY.md` for the canonical vocabulary.
 ## What the package does
 
 ```
-endpoint CSV ─┐
-              ├─► schema + assay-metadata ─► QC + diagnostics
-timecourse CSV┘                                │
-                                               ▼
+endpoint CSV  ─┐
+               ├─► schema + assay-metadata ─► QC + diagnostics
+timecourse CSV ┘                                │
+                                                ▼
                        fingerprint extraction (EC50(m), m*(c), c_rev,
                                                 E_peak, t_peak, E_inf,
                                                 delayed protection)
-                                               │
-                                               ▼
+                                                │
+                                                ▼
                         bootstrap CIs + evidence-strength scoring
-                                               │
-                                               ▼
+                                                │
+                                                ▼
                        architecture call (two_state_supported /
                                           protected_state_suggested /
                                           inconclusive)
