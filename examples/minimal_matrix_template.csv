@@ -1,0 +1,13 @@
+dataset_id,system,assay,c,m,response,replicate,condition_label,unit_concentration,unit_mechanics
+template,my_system,my_assay,0.0,0.2,,1,low_c_low_m,uM,kPa
+template,my_system,my_assay,0.0,0.6,,1,low_c_mid_m,uM,kPa
+template,my_system,my_assay,0.0,1.0,,1,low_c_high_m,uM,kPa
+template,my_system,my_assay,0.5,0.2,,1,mid_c_low_m,uM,kPa
+template,my_system,my_assay,0.5,0.6,,1,mid_c_mid_m,uM,kPa
+template,my_system,my_assay,0.5,1.0,,1,mid_c_high_m,uM,kPa
+template,my_system,my_assay,1.0,0.2,,1,high_c_low_m,uM,kPa
+template,my_system,my_assay,1.0,0.6,,1,high_c_mid_m,uM,kPa
+template,my_system,my_assay,1.0,1.0,,1,high_c_high_m,uM,kPa
+template,my_system,my_assay,2.0,0.2,,1,very_high_c_low_m,uM,kPa
+template,my_system,my_assay,2.0,0.6,,1,very_high_c_mid_m,uM,kPa
+template,my_system,my_assay,2.0,1.0,,1,very_high_c_high_m,uM,kPa
