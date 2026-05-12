@@ -238,7 +238,7 @@ https://doi.org/10.5281/zenodo.20136822.
 
 ## Acknowledgements
 
-This project was revised with the assistance of Claude Code. All AI-generated contributions have been audited and approved by the developers, who maintain full accountability for this release.
+This project was revised with the assistance of 'Claude Code'. All AI-generated contributions have been audited and approved by the developers, who maintain full accountability for this release.
 
 ## License
 
