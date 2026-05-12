@@ -1,11 +1,15 @@
+"""Human-readable report writers for the inference pipeline."""
+
 from __future__ import annotations
 
 from pathlib import Path
 import json
+from typing import Any
+
 import pandas as pd
 
 from .discriminate import build_evidence_table
-from .types import DiscriminationResult, QCReport
+from .types import AssayMetadata, DiscriminationResult, QCReport
 
 
 def _write_dataframe_block(f, title: str, df: pd.DataFrame | None) -> None:
@@ -37,7 +41,7 @@ def _write_qc_block(f, title: str, qc: QCReport | None) -> None:
 def write_text_report(
     outpath: str | Path,
     result: DiscriminationResult,
-    reversal: dict[str, float | bool | str | None],
+    reversal: dict[str, Any],
     ec50_df: pd.DataFrame | None = None,
     mopt_df: pd.DataFrame | None = None,
     peak_df: pd.DataFrame | None = None,
@@ -46,6 +50,7 @@ def write_text_report(
     endpoint_qc: QCReport | None = None,
     timecourse_qc: QCReport | None = None,
     diagnostics_df: pd.DataFrame | None = None,
+    assay_metadata: AssayMetadata | None = None,
 ) -> None:
     outpath = Path(outpath)
     outpath.parent.mkdir(parents=True, exist_ok=True)
@@ -61,6 +66,17 @@ def write_text_report(
     )
     with outpath.open("w", encoding="utf-8") as f:
         f.write("mechanopharm-infer report\n=========================\n\n")
+        f.write(
+            "Theory: state architecture is inferred from response geometry over "
+            "concentration c, mechanical descriptor m, and time t.\n"
+            "Output fingerprints follow the glossary: EC50(m), m*(c), "
+            "c_rev = -Delta_lambda/Delta_mu, E_peak(c,m), t_peak(c,m), E_inf(c,m).\n\n"
+        )
+        if assay_metadata is not None:
+            f.write("Assay metadata\n--------------\n")
+            for k, v in assay_metadata.to_dict().items():
+                f.write(f"- {k}: {v}\n")
+            f.write("\n")
         _write_qc_block(f, "Endpoint QC", endpoint_qc)
         _write_qc_block(f, "Timecourse QC", timecourse_qc)
         f.write("Architecture discrimination\n---------------------------\n")
@@ -92,8 +108,8 @@ def write_text_report(
         _write_dataframe_block(f, "Diagnostics", diagnostics_df)
         _write_dataframe_block(f, "EC50(m)", ec50_df)
         _write_dataframe_block(f, "m*(c)", mopt_df)
-        _write_dataframe_block(f, "Peak metrics", peak_df)
-        _write_dataframe_block(f, "Final response", final_df)
+        _write_dataframe_block(f, "Peak metrics (E_peak, t_peak)", peak_df)
+        _write_dataframe_block(f, "Final response (E_inf)", final_df)
         _write_dataframe_block(f, "Delayed protection metrics", delayed_df)
 
 

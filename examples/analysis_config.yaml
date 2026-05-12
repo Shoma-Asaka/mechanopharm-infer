@@ -1,0 +1,32 @@
+# Example analysis configuration for mechanopharm-infer.
+#
+# Run with:
+#     mechanopharm-infer --config examples/analysis_config.yaml
+#
+# Any path is interpreted relative to the working directory from which
+# mechanopharm-infer is invoked.
+
+endpoint: examples/demo_endpoint.csv
+timecourse: examples/demo_timecourse.csv
+out: outputs_demo_config
+
+# Bootstrap / RNG settings
+n_boot: 200
+random_seed: 0
+
+# Assay metadata propagates to architecture_call.json and report.txt.
+# Use `readout_level: proximal` for direct signaling readouts (current,
+# calcium, phosphorylation, ...) and `readout_level: phenotypic` for slower
+# functional outcomes (viability, growth arrest, ...).
+assay_metadata:
+  response_mode: higher_is_stronger_effect
+  assay_family: cell_substrate
+  normalization_mode: raw
+  baseline_definition: none
+  readout_level: phenotypic
+
+# Fingerprint thresholds (defaults shown).
+thresholds:
+  ec50_min_dynamic_range: 0.05
+  mopt_prominence_threshold: 0.03
+  delayed_attenuation_threshold: 0.05

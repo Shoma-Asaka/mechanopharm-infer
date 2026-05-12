@@ -1,145 +1,179 @@
 # mechanopharm-infer
 
-`mechanopharm-infer` is a lightweight inference toolkit for mechanopharmacology response-landscape analysis.
+`mechanopharm-infer` is a lightweight inference toolkit for
+mechanopharmacology response-landscape analysis.  It is the data-facing
+companion to the theory paper
 
-It is designed as an actively developed research prototype for **data-facing, architecture-level inference** from endpoint and timecourse datasets. The current focus is conservative first-pass analysis: preprocessing, fingerprint extraction, uncertainty summaries, evidence assembly, and cautious architecture-class discrimination.
+> Shoma Asaka. *A Thermodynamically Constrained Minimal Theory of
+> Mechanopharmacology.* (Manuscript referenced as `b824d030` / public
+> preprint `3abb4acb`.)
+
+The toolkit extracts the practical fingerprint set defined by the theory
+(`EC50(m)`, `m*(c)`, `c_rev`, `E_peak`, `t_peak`, `E_inf`) from endpoint and
+timecourse datasets and assembles them into a conservative architecture-class
+call (two-state vs protected-state).
 
 ## Status
 
-This repository is an **early public prototype**.
-
-It is intended for methods development around mechanopharmacology inference workflows, not for full mechanistic identification or production-grade model fitting. API details, evidence rules, and output formats may still evolve across pre-1.0 releases.
+Active research prototype at v0.3.0.  This release introduces theory-aligned
+column names, a direct estimate of the reversal concentration
+`c_rev = -Delta_lambda / Delta_mu`, sub-grid refinement of `m*(c)`,
+state-bias-parametrized synthetic generators, a structured
+`fingerprint_values` payload in `architecture_call.json`, and `--config`
+support in the CLI.  See `GLOSSARY.md` for the canonical vocabulary.
 
 ## What the package does
 
-The current toolkit supports the following workflow:
+```
+endpoint CSV ─┐
+              ├─► schema + assay-metadata ─► QC + diagnostics
+timecourse CSV┘                                │
+                                               ▼
+                       fingerprint extraction (EC50(m), m*(c), c_rev,
+                                                E_peak, t_peak, E_inf,
+                                                delayed protection)
+                                               │
+                                               ▼
+                        bootstrap CIs + evidence-strength scoring
+                                               │
+                                               ▼
+                       architecture call (two_state_supported /
+                                          protected_state_suggested /
+                                          inconclusive)
+```
 
-1. standardize endpoint and timecourse tables into a canonical schema,
-2. apply assay-aware preprocessing and response-direction normalization,
-3. perform QC and dataset diagnostics,
-4. extract response fingerprints such as `EC50(m)`, `m*(c)`, sign-reversal diagnostics, and timecourse-derived peak/final metrics,
-5. attach uncertainty summaries and warning metadata,
-6. assemble fingerprint evidence,
-7. make a conservative architecture-class call:
-   - `two_state_supported`
-   - `protected_state_suggested`
-   - `inconclusive`
+The package is intended as an **architecture-inference layer**, not as a full
+parameter-identification framework.
 
-The package is intended as an **architecture-inference layer**, not as a full parameter-identification framework.
+## Theory ↔ code mapping
 
-## Current scope
+Every quantity in the table below is reproducible from the code base.  Equation
+numbers refer to the theory paper.
 
-Included in the current prototype:
+| Theory symbol | Equation | Code entry point | Output column / field |
+|---------------|----------|------------------|-----------------------|
+| `Delta_G(c, m)` | DeltaG | `synthetic.TwoStateParams` | (generator parameters) |
+| `p_1*(c, m)` (two-state) | pstar-explicit | `synthetic.generate_two_state_endpoint` | `response` |
+| `p_1*(c, m)` (three-state) | p1starR | `synthetic.generate_protected_state_endpoint` | `response` |
+| `EC50(m)` | c12 | `fingerprints.ec50_vs_m` | `ec50_vs_m.csv` |
+| `c_rev = -Delta_lambda / Delta_mu` | crev | `fingerprints.mechanical_sign_reversal` | `sign_reversal.csv`, `architecture_call.json :: fingerprint_values.c_rev` |
+| `m*(c)` (two-state, quadratic kappa) | mstar-2state | `fingerprints.find_mechanical_optima` (parabolic refinement) | `mopt_vs_c.csv :: m_opt` |
+| `m*(c)` (three-state) | mstar-opt | `fingerprints.find_mechanical_optima` | `mopt_vs_c.csv :: m_opt` |
+| `E_peak(c, m)` | (theory Sec 4.3) | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: e_peak` |
+| `t_peak(c, m)` | tpeak-rates | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: t_peak` |
+| `E_inf(c, m)` | bmmb-calibration | `fingerprints.endpoint_final_response` | `final_response.csv :: e_inf` |
+| delayed protection (`E_peak - E_inf`) | (theory Sec 4.3) | `fingerprints.delayed_protection_metrics` | `delayed_protection.csv :: attenuation` |
+| architecture call | Sec 5 | `discriminate.discriminate_architecture` | `architecture_call.json :: call` |
 
-- canonical schema handling for endpoint and timecourse CSV files,
-- assay metadata handling and response-direction normalization,
-- endpoint and timecourse QC,
-- endpoint and timecourse diagnostics,
-- reliability-aware `EC50(m)` extraction,
-- reliability-aware `m*(c)` extraction,
-- sign-reversal diagnostics,
-- timecourse peak/final/delayed-protection fingerprints,
-- bootstrap summaries for selected fingerprints,
-- evidence-first architecture discrimination,
-- lightweight plotting,
-- synthetic dataset generators and benchmark utilities,
-- benchmark summary plots and reports,
-- CLI and Python API entry points,
-- examples, benchmark scripts, and tests.
-
-Not included:
-
-- full parameter inference,
-- Bayesian model comparison,
-- assay-specific calibration models,
-- high-dimensional mechanistic fitting,
-- production-grade hosted web service beyond the Streamlit MVP,
-- time-dependent mechanics / feedback model classes.
+For the full glossary (state labels, evidence-strength ranks, etc.), see
+[`GLOSSARY.md`](GLOSSARY.md).
 
 ## Installation
-
-For development use:
 
 ```bash
 pip install -e .[dev]
 ```
 
+YAML configs require `PyYAML`, which is included in the `dev` extra and is
+also available as the `yaml` extra.
+
 ## Quick start
 
-### Endpoint-only CLI run
+### Command line
 
-```bash
-mechanopharm-infer \
-  --endpoint examples/demo_endpoint.csv \
-  --out outputs_demo
-```
-
-### Endpoint + timecourse CLI run
+Run with explicit flags:
 
 ```bash
 mechanopharm-infer \
   --endpoint examples/demo_endpoint.csv \
   --timecourse examples/demo_timecourse.csv \
-  --out outputs_demo_tc
+  --out outputs_demo
 ```
 
-### Synthetic benchmark utilities
+Or, recommended for reproducibility, with a config file:
 
 ```bash
-python benchmarks/generate_synthetic.py
-python benchmarks/run_clean_benchmark.py
-python benchmarks/run_benchmark_suite.py
+mechanopharm-infer --config examples/analysis_config.yaml
 ```
 
-### Streamlit web app MVP
+`analysis_config.yaml` lets you pin assay metadata (`response_mode`,
+`assay_family`, `readout_level`, ...) and fingerprint thresholds in a single
+declarative file.
 
-Run the browser-based MVP locally from a source checkout:
+### Python API
 
-```bash
-pip install -r requirements.txt
-pip install -e .
-streamlit run apps/streamlit_app.py
+```python
+from mechanopharm_infer import (
+    AssayMetadata,
+    load_endpoint_csv, load_timecourse_csv,
+    ec50_vs_m, find_mechanical_optima, mechanical_sign_reversal,
+    peak_metrics_by_condition, endpoint_final_response, delayed_protection_metrics,
+    discriminate_architecture,
+)
+from mechanopharm_infer.preprocess import (
+    summarize_endpoint, summarize_timecourse,
+    check_endpoint_qc, check_timecourse_qc,
+    endpoint_to_grid, split_timecourses_by_condition,
+)
+
+endpoint = load_endpoint_csv("examples/demo_endpoint.csv")
+timecourse = load_timecourse_csv("examples/demo_timecourse.csv")
+
+summary = summarize_endpoint(endpoint)
+c_grid, m_grid, response = endpoint_to_grid(summary)
+
+ec50_df = ec50_vs_m(c_grid, m_grid, response)
+mopt_df = find_mechanical_optima(c_grid, m_grid, response)
+reversal = mechanical_sign_reversal(c_grid, m_grid, response)
+
+tc = split_timecourses_by_condition(summarize_timecourse(timecourse))
+peak_df = peak_metrics_by_condition(tc)
+final_df = endpoint_final_response(tc)
+delayed_df = delayed_protection_metrics(peak_df, final_df)
+
+result = discriminate_architecture(
+    reversal=reversal, ec50_df=ec50_df, mopt_df=mopt_df,
+    peak_df=peak_df, final_df=final_df, delayed_df=delayed_df,
+    endpoint_qc=check_endpoint_qc(summary),
+)
+print(result.label, result.fingerprint_values["c_rev"]["estimate"])
 ```
 
-The app supports:
+See `examples/quick_start.py` for a runnable version.
 
-- bundled demo data from `examples/`,
-- uploaded endpoint CSV files,
-- optional uploaded timecourse CSV files,
-- browser-based display of architecture calls, reports, figures, and tables,
-- downloadable output bundles.
+### Theory-parametrized synthetic data
 
-For Streamlit Community Cloud deployment, use `apps/streamlit_app.py` as the app entrypoint.
+```python
+from mechanopharm_infer import (
+    TwoStateParams, ProtectedStateParams,
+    generate_two_state_endpoint, generate_protected_state_endpoint,
+)
+
+two_state = generate_two_state_endpoint(
+    params=TwoStateParams(delta_g0=3.2, delta_alpha=4.0, delta_lambda=1.6, delta_mu=0.8),
+)
+protected = generate_protected_state_endpoint(
+    params=ProtectedStateParams(a0=-2.0, b0=4.0, lambda0=1.2, lambda1=2.4),
+)
+```
+
+The generator parameters are precisely the coefficients of Eq. (DeltaG) and
+Eqs. (R01log, R12log) in the theory paper.
 
 ## Standard outputs
 
-A standard analysis produces some or all of the following, depending on whether timecourse input is provided:
+A standard analysis produces:
 
-- `endpoint_summary.csv`
-- `ec50_vs_m.csv`
-- `mopt_vs_c.csv`
-- `fingerprint_evidence.csv`
-- `diagnostics.csv`
-- `ec50_bootstrap.csv`
-- `mopt_bootstrap.csv`
-- `peak_metrics.csv`
-- `final_response.csv`
-- `delayed_protection.csv`
-- `delayed_protection_bootstrap.csv`
-- `endpoint_qc.json`
-- `timecourse_qc.json`
-- `architecture_call.json`
+- `endpoint_summary.csv`, `endpoint_qc.json`
+- `ec50_vs_m.csv` (+ `ec50_bootstrap.csv`)
+- `mopt_vs_c.csv` (+ `mopt_bootstrap.csv`)
+- `sign_reversal.csv` (with the regression-based `c_rev_estimate`)
+- `fingerprint_evidence.csv`, `diagnostics.csv`
+- `peak_metrics.csv`, `final_response.csv` (if timecourse is provided)
+- `delayed_protection.csv` (+ `delayed_protection_bootstrap.csv`)
+- `architecture_call.json` (includes the structured `fingerprint_values` payload and `assay_metadata` block)
 - `report.txt`
-- `endpoint_landscape.png`
-- `ec50_vs_m.png`
-- `mopt_vs_c.png`
-
-Benchmark utilities additionally write:
-
-- `benchmark_summary.csv`
-- `benchmark_report.json`
-- `benchmark_report.txt`
-- `benchmark_summary.png`
+- `endpoint_landscape.png`, `ec50_vs_m.png`, `mopt_vs_c.png`
 
 ## Canonical input schema
 
@@ -151,117 +185,61 @@ Required columns after standardization:
 - `m` : mechanical input
 - `response` : endpoint response
 
-Optional columns:
-
-- `replicate`
-- `dataset_id`
-- `system`
-- `assay`
-- `condition_label`
-- `unit_concentration`
-- `unit_mechanics`
-- `batch`
-- `control_flag`
-
-Common aliases such as `concentration`, `mechanics`, and `effect` are accepted by the schema standardizer.
+Optional columns: `replicate`, `dataset_id`, `system`, `assay`,
+`condition_label`, `unit_concentration`, `unit_mechanics`, `batch`,
+`control_flag`.  Common aliases (`concentration`, `mechanics`, `stiffness`,
+`effect`) are accepted by the schema standardizer.
 
 ### Timecourse table
 
-Required columns after standardization:
-
-- `time`
-- `c`
-- `m`
-- `value`
-
-Optional columns mirror the endpoint case where relevant.
+Required columns after standardization: `time`, `c`, `m`, `value`.  Optional
+columns mirror the endpoint case.
 
 ## Assay metadata
 
-The preprocessing layer can use assay metadata to orient and normalize responses.
+`AssayMetadata` records assay-facing context so that fingerprints can be
+interpreted unambiguously downstream:
 
-Key metadata fields are:
+| Field | Allowed values |
+|-------|----------------|
+| `response_mode` | `higher_is_stronger_effect`, `lower_is_stronger_effect` |
+| `assay_family` | free form (`generic`, `membrane`, `cell_substrate`, `flow`, `confined_multicellular`, ...) |
+| `normalization_mode` | `raw`, `control_subtracted`, `vehicle_normalized`, `min_max`, `within_mechanics_min_max` |
+| `baseline_definition` | `none`, `control_flag`, `minimum_per_mechanics`, `global_minimum` |
+| `readout_level` | `proximal`, `phenotypic`, `unspecified` |
 
-- `response_mode`
-  - `higher_is_stronger_effect`
-  - `lower_is_stronger_effect`
-- `normalization_mode`
-  - `raw`
-  - `control_subtracted`
-  - `vehicle_normalized`
-  - `min_max`
-  - `within_mechanics_min_max`
-- `baseline_definition`
-
-This is useful when mixing apoptosis-like, viability-like, and survival-like readouts in a shared workflow.
-
-## Python API examples
-
-### Canonical loading and preprocessing
-
-```python
-from mechanopharm_infer import load_endpoint_csv, AssayMetadata, prepare_endpoint_data
-
-endpoint = load_endpoint_csv("examples/demo_endpoint.csv")
-meta = AssayMetadata(response_mode="higher_is_stronger_effect")
-prepared = prepare_endpoint_data(endpoint, assay_metadata=meta)
-```
-
-### Synthetic benchmark generation
-
-```python
-from mechanopharm_infer import (
-    generate_two_state_endpoint,
-    SyntheticBenchmarkConfig,
-    run_synthetic_benchmark,
-)
-
-endpoint = generate_two_state_endpoint()
-config = SyntheticBenchmarkConfig(n_boot=50, random_seed=1)
-summary = run_synthetic_benchmark(config=config)
-```
-
-## Examples and benchmark scripts
-
-- `examples/README.md` describes the demo files used for local CLI and Python API checks.
-- `examples/run_demo.py` runs a local endpoint or endpoint+timecourse demonstration.
-- `benchmarks/generate_synthetic.py` creates clean and noisy synthetic benchmark inputs.
-- `benchmarks/run_clean_benchmark.py` runs a small development-oriented synthetic benchmark.
-- `benchmarks/run_benchmark_suite.py` writes a benchmark summary table, JSON/TXT reports, and a summary plot.
+The `readout_level` field captures the theory's distinction between the
+proximal signaling output `S` and the phenotypic outcome `E` and is recorded
+in `architecture_call.json` so that report consumers do not confuse them.
 
 ## Web app
 
-A Streamlit-based MVP of mechanopharm-infer v0.2.3 is available here:
+A Streamlit MVP is available locally via:
 
-https://mechanopharm-infer.streamlit.app/
+```bash
+pip install -r requirements.txt
+pip install -e .
+streamlit run apps/streamlit_app.py
+```
 
-The app supports browser-based execution with bundled demo data or user-uploaded endpoint/timecourse CSV files.
-
-Archived release:
-https://doi.org/10.5281/zenodo.19780165
-
-## Relation to `mechanopharm-minimal`
-
-This repository is distinct from `mechanopharm-minimal`.
-
-- `mechanopharm-minimal` provides a minimal reference implementation for the theory layer.
-- `mechanopharm-infer` focuses on data-facing fingerprint extraction, evidence assembly, uncertainty summaries, and cautious architecture-class inference.
+And on the public cloud at https://mechanopharm-infer.streamlit.app/.
 
 ## Current limitations
 
-This remains an early prototype release.
-
-Important limitations:
-
-- evidence rules are still evolving,
-- sparse mechanics grids can limit interior-optimum assessment,
-- short time windows can limit delayed-protection assessment,
-- architecture calls are intentionally conservative,
-- future releases may change API details, evidence weighting, and file outputs.
+- Evidence rules remain conservative and may evolve.
+- Sparse mechanics grids limit interior-optimum assessment.
+- Short observation windows limit delayed-protection assessment.
+- Architecture calls discriminate architecture *class*; they do not identify
+  unique microscopic rate laws.
+- Anisotropy, spatial transport, and explicit feedback dynamics are out of
+  scope for this version (see theory paper Section 6).
 
 ## Citation and code availability
 
-If you use this repository in academic work, please cite the corresponding archived software release for the version you used. A manuscript-specific release and DOI should be used whenever available.
+If you use this repository in academic work, please cite the corresponding
+archived software release for the version you used.  Manuscript-specific
+releases and DOIs are tracked at
+https://doi.org/10.5281/zenodo.19780165.
 
 ## License
 

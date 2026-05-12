@@ -1,0 +1,13 @@
+dataset_id,system,assay,c,m,time,value,replicate,unit_concentration,unit_mechanics
+template,my_system,my_assay,0.5,0.6,0,,1,uM,kPa
+template,my_system,my_assay,0.5,0.6,1,,1,uM,kPa
+template,my_system,my_assay,0.5,0.6,2,,1,uM,kPa
+template,my_system,my_assay,0.5,0.6,4,,1,uM,kPa
+template,my_system,my_assay,0.5,0.6,8,,1,uM,kPa
+template,my_system,my_assay,0.5,0.6,12,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,0,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,1,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,2,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,4,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,8,,1,uM,kPa
+template,my_system,my_assay,1.0,0.6,12,,1,uM,kPa
