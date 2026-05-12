@@ -381,7 +381,7 @@ with st.sidebar:
     st.markdown("### Citation")
     st.markdown("If you use this software, please cite the archived release:")
     st.markdown(
-        "[mechanopharm-infer v0.3.0](https://doi.org/10.5281/zenodo.19780165)"
+        "[mechanopharm-infer v0.3.0](https://doi.org/10.5281/zenodo.19539760)"
     )
 
 st.markdown(
