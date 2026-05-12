@@ -227,7 +227,7 @@ And on the public cloud at https://mechanopharm-infer.streamlit.app/.
 - Architecture calls discriminate architecture *class*; they do not identify
   unique microscopic rate laws.
 - Anisotropy, spatial transport, and explicit feedback dynamics are out of
-  scope for this version (see theory paper Section 6).
+  scope for this version.
 
 ## Citation and code availability
 
