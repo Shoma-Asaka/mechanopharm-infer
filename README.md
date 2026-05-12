@@ -4,10 +4,6 @@
 mechanopharmacology response-landscape analysis.  It is the data-facing
 companion to the theory paper
 
-> Shoma Asaka. *A Thermodynamically Constrained Minimal Theory of
-> Mechanopharmacology.* (Manuscript referenced as `b824d030` / public
-> preprint `3abb4acb`.)
-
 The toolkit extracts the practical fingerprint set defined by the theory
 (`EC50(m)`, `m*(c)`, `c_rev`, `E_peak`, `t_peak`, `E_inf`) from endpoint and
 timecourse datasets and assembles them into a conservative architecture-class
