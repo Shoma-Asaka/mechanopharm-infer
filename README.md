@@ -234,7 +234,7 @@ And on the public cloud at https://mechanopharm-infer.streamlit.app/.
 If you use this repository in academic work, please cite the corresponding
 archived software release for the version you used.  Manuscript-specific
 releases and DOIs are tracked at
-https://doi.org/10.5281/zenodo.19780165.
+https://doi.org/10.5281/zenodo.20136822.
 
 ## Acknowledgements
 
