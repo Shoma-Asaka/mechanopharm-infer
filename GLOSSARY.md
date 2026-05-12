@@ -34,15 +34,15 @@ The reduced two- and three-state state vectors are denoted
 | kappa | `kappa` | Quadratic curvature in m (enables an interior m\* in the strict two-state model). |
 | local detailed balance | imposed by construction in the generators | `ln(k_ij / k_ji) = -beta * (G_j - G_i)` |
 
-## 3. Fingerprints (theory section 5 of the manuscript)
+## 3. Fingerprints 
 
 | Theory symbol | Code field / file | Notes |
 |---------------|-------------------|-------|
-| `EC50(m)` | `ec50_vs_m.csv`, column `ec50` | Mechanically conditioned half-effective concentration; Eq. c12. |
-| `c_rev = -Delta_lambda / Delta_mu` | `sign_reversal.csv`, `fingerprint_values.c_rev.estimate` | Reversal concentration; Eq. crev.  Regression-based estimate with bootstrap CI. |
-| `m*(c)` | `mopt_vs_c.csv`, column `m_opt` | Optimal mechanical condition at fixed c; Eq. mstar-2state / mstar-opt.  Parabolic sub-grid refinement when interior. |
+| `EC50(m)` | `ec50_vs_m.csv`, column `ec50` | Mechanically conditioned half-effective concentration. |
+| `c_rev = -Delta_lambda / Delta_mu` | `sign_reversal.csv`, `fingerprint_values.c_rev.estimate` | Reversal concentration.  Regression-based estimate with bootstrap CI. |
+| `m*(c)` | `mopt_vs_c.csv`, column `m_opt` | Optimal mechanical condition at fixed c.  Parabolic sub-grid refinement when interior. |
 | `E_peak(c, m)` | `peak_metrics.csv`, column `e_peak` | Peak amplitude of the proximal signal over time. |
-| `t_peak(c, m)` | `peak_metrics.csv`, column `t_peak` | Time at which the peak is reached; Eq. tpeak-rates. |
+| `t_peak(c, m)` | `peak_metrics.csv`, column `t_peak` | Time at which the peak is reached. |
 | `E_inf(c, m)` | `final_response.csv`, column `e_inf` | Long-time / endpoint response. |
 | delayed protection | `delayed_protection.csv`, column `attenuation` | `E_peak - E_inf`; flagged via `delayed_protection_detected`. |
 
