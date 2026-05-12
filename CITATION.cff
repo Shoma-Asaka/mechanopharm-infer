@@ -10,7 +10,7 @@ authors:
     orcid: "https://orcid.org/0009-0004-4030-2051"
 repository-code: "https://github.com/Shoma-Asaka/mechanopharm-infer"
 url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.3.0"
-doi: "10.5281/zenodo.19780165"
+doi: "10.5281/zenodo.20136822"
 license: "MIT"
 version: "0.3.0"
 preferred-citation:
@@ -21,6 +21,6 @@ preferred-citation:
       orcid: "https://orcid.org/0009-0004-4030-2051"
   title: "mechanopharm-infer"
   version: "0.3.0"
-  doi: "10.5281/zenodo.19780165"
+  doi: "10.5281/zenodo.20136822"
   url: "https://github.com/Shoma-Asaka/mechanopharm-infer/tree/v0.3.0"
   year: 2026
