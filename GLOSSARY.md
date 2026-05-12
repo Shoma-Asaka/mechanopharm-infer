@@ -27,12 +27,12 @@ The reduced two- and three-state state vectors are denoted
 
 | Symbol | Code name | Meaning |
 |--------|-----------|---------|
-| Delta_G | (implicit) `TwoStateParams.delta_g0`, `delta_alpha`, `delta_lambda`, `delta_mu`, `kappa` | Effective state-bias difference of the two-state model (Eq. DeltaG). |
+| Delta_G | (implicit) `TwoStateParams.delta_g0`, `delta_alpha`, `delta_lambda`, `delta_mu`, `kappa` | Effective state-bias difference of the two-state model. |
 | Delta_alpha | `delta_alpha` | Purely chemical bias coefficient. |
 | Delta_lambda | `delta_lambda`, `delta_lambda_proxy` | Purely mechanical bias coefficient.  The "proxy" form is recovered up to scale from response-landscape data. |
 | Delta_mu | `delta_mu`, `delta_mu_proxy` | Mechanochemical cross term (cm coupling).  Non-zero `Delta_mu` is the minimal condition for reversal of mechanical sensitivity. |
 | kappa | `kappa` | Quadratic curvature in m (enables an interior m\* in the strict two-state model). |
-| local detailed balance | imposed by construction in the generators | `ln(k_ij / k_ji) = -beta * (G_j - G_i)`; see Section 2.3 of the theory paper. |
+| local detailed balance | imposed by construction in the generators | `ln(k_ij / k_ji) = -beta * (G_j - G_i)` |
 
 ## 3. Fingerprints (theory section 5 of the manuscript)
 
