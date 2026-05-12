@@ -50,8 +50,8 @@ The reduced two- and three-state state vectors are denoted
 
 | Code label | Meaning | Required minimal architecture |
 |------------|---------|------------------------------|
-| `two_state_supported` | Mechanically shifted dose response and/or concentration-dependent sign reversal are detected, but no protected-state signatures. | Minimal two-state model with mechanochemical coupling (Section 3 of the theory paper). |
-| `protected_state_suggested` | At least one of {interior optimum, moving optimum, transient peak, delayed protection} is reliably detected. | Minimal three-state protected extension (Section 4 of the theory paper). |
+| `two_state_supported` | Mechanically shifted dose response and/or concentration-dependent sign reversal are detected, but no protected-state signatures. | Minimal two-state model with mechanochemical coupling. |
+| `protected_state_suggested` | At least one of {interior optimum, moving optimum, transient peak, delayed protection} is reliably detected. | Minimal three-state protected extension. |
 | `inconclusive` | Endpoint QC failed or no signature is reliably assessable. | Architecture cannot be inferred from the supplied data. |
 
 ## 5. Evidence strength
