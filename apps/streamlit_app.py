@@ -4,6 +4,7 @@ import json
 import sys
 import tempfile
 import zipfile
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
@@ -16,13 +17,7 @@ SRC = ROOT / "src"
 if SRC.exists() and str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
-from mechanopharm_infer.cli import _load_config, analyze
-from mechanopharm_infer.types import (
-    _ALLOWED_BASELINE_DEFINITIONS,
-    _ALLOWED_NORMALIZATION_MODES,
-    _ALLOWED_READOUT_LEVELS,
-    _ALLOWED_RESPONSE_MODES,
-)
+from mechanopharm_infer.cli import analyze
 
 
 APP_TITLE = "mechanopharm-infer"
@@ -32,10 +27,23 @@ DEFAULT_TIMECOURSE = ROOT / "examples" / "demo_timecourse.csv"
 ENDPOINT_REQUIRED = ("c", "m", "response")
 TIMECOURSE_REQUIRED = ("time", "c", "m", "value")
 
-RESPONSE_MODES = sorted(_ALLOWED_RESPONSE_MODES)
-NORMALIZATION_MODES = sorted(_ALLOWED_NORMALIZATION_MODES)
-BASELINE_DEFINITIONS = sorted(_ALLOWED_BASELINE_DEFINITIONS)
-READOUT_LEVELS = sorted(_ALLOWED_READOUT_LEVELS)
+# Allowed values mirror mechanopharm_infer.types (kept in sync manually so the
+# app does not depend on any private symbols of the package).
+RESPONSE_MODES = ["higher_is_stronger_effect", "lower_is_stronger_effect"]
+NORMALIZATION_MODES = [
+    "raw",
+    "vehicle_normalized",
+    "control_subtracted",
+    "min_max",
+    "within_mechanics_min_max",
+]
+BASELINE_DEFINITIONS = [
+    "none",
+    "control_flag",
+    "minimum_per_mechanics",
+    "global_minimum",
+]
+READOUT_LEVELS = ["unspecified", "proximal", "phenotypic"]
 
 DEFAULT_ADVANCED: dict[str, Any] = {
     "n_boot": 100,
@@ -95,12 +103,9 @@ def _read_csv_safely(uploaded_file) -> pd.DataFrame | None:
     if uploaded_file is None:
         return None
     try:
-        # `getvalue()` keeps the buffer reusable across reruns.
-        from io import BytesIO
-
         return pd.read_csv(BytesIO(uploaded_file.getvalue()))
     except Exception as exc:
-        st.error(f"CSV を読み込めませんでした: {exc}")
+        st.error(f"Could not read CSV: {exc}")
         return None
 
 
@@ -118,25 +123,47 @@ def _default_timecourse_editor_df() -> pd.DataFrame:
     return pd.DataFrame({col: pd.Series(dtype="float") for col in TIMECOURSE_REQUIRED})
 
 
+def _parse_config_bytes(name: str, raw: bytes) -> dict[str, Any]:
+    """Parse a YAML or JSON config file. Mirrors the CLI's --config semantics."""
+
+    suffix = Path(name).suffix.lower()
+    text = raw.decode("utf-8")
+    if suffix in {".yaml", ".yml"}:
+        try:
+            import yaml  # type: ignore
+        except ImportError as exc:
+            raise RuntimeError(
+                "YAML config requested but PyYAML is not installed in this "
+                "environment. Upload a JSON config instead, or add PyYAML to "
+                "requirements.txt."
+            ) from exc
+        data = yaml.safe_load(text) or {}
+    else:
+        data = json.loads(text)
+    if not isinstance(data, dict):
+        raise ValueError("Config file must define a top-level mapping.")
+    return data
+
+
 def _validate_dataframe(
     df: pd.DataFrame | None, required: tuple[str, ...], *, label: str
 ) -> list[str]:
     errors: list[str] = []
     if df is None or df.empty:
-        errors.append(f"{label}: データが空です。")
+        errors.append(f"{label}: no rows provided.")
         return errors
     missing = [c for c in required if c not in df.columns]
     if missing:
-        errors.append(f"{label}: 必須列が不足しています → {missing}")
+        errors.append(f"{label}: required columns missing -> {missing}")
         return errors
     for col in required:
         coerced = pd.to_numeric(df[col], errors="coerce")
         if coerced.isna().all():
-            errors.append(f"{label}: 列 '{col}' に有効な数値がありません。")
+            errors.append(f"{label}: column '{col}' has no valid numeric values.")
         elif coerced.isna().any():
             n_bad = int(coerced.isna().sum())
             errors.append(
-                f"{label}: 列 '{col}' に数値変換できないセルが {n_bad} 件あります。"
+                f"{label}: column '{col}' has {n_bad} cell(s) that cannot be parsed as numbers."
             )
     return errors
 
@@ -178,8 +205,8 @@ def _apply_config_to_state(config: dict[str, Any]) -> list[str]:
 
     if config.get("endpoint") or config.get("timecourse"):
         messages.append(
-            "(注) config の endpoint / timecourse パス指定はアプリでは無視されます。"
-            " 入力欄から指定してください。"
+            "(note) The 'endpoint' and 'timecourse' paths in the config file are ignored here; "
+            "provide data through the Input section instead."
         )
     return messages
 
@@ -211,7 +238,8 @@ with st.sidebar:
         timecourse_file = st.file_uploader("Timecourse CSV (optional)", type=["csv"])
     elif input_mode == "Direct input (table editor)":
         st.caption(
-            "下の表をクリックして直接編集できます。行は右下の `+` で追加、空セルは削除されます。"
+            "Click cells to edit values. Use the '+' at the bottom-right to add rows; "
+            "empty cells are dropped."
         )
         if "endpoint_editor_df" not in st.session_state:
             st.session_state["endpoint_editor_df"] = _default_endpoint_editor_df()
@@ -227,7 +255,7 @@ with st.sidebar:
             },
         )
         include_timecourse_direct = st.checkbox(
-            "タイムコースデータも入力する", value=False
+            "Also enter timecourse data", value=False
         )
         if include_timecourse_direct:
             if "timecourse_editor_df" not in st.session_state:
@@ -245,30 +273,31 @@ with st.sidebar:
                 },
             )
     else:
-        st.info("examples/ のデモ用 endpoint / timecourse CSV を使用します。")
+        st.info("Using the demo endpoint and timecourse CSV files from examples/.")
 
-    with st.expander("詳細設定 (assay metadata / thresholds)", expanded=False):
+    with st.expander("Advanced settings (assay metadata / thresholds)", expanded=False):
         config_file = st.file_uploader(
             "Config (YAML/JSON, optional)",
             type=["yaml", "yml", "json"],
             key="config_upload",
-            help="CLI の --config と同じ形式。読み込んだ値は下の各ウィジェットの初期値に反映されます。",
+            help=(
+                "Same schema as the CLI's --config flag. Uploaded values are "
+                "applied as defaults to the widgets below."
+            ),
         )
         if config_file is not None and st.button(
             "Apply config to controls", key="apply_config_btn"
         ):
             try:
-                tmp_cfg_path = Path(tempfile.gettempdir()) / config_file.name
-                tmp_cfg_path.write_bytes(config_file.getvalue())
-                cfg = _load_config(tmp_cfg_path)
+                cfg = _parse_config_bytes(config_file.name, config_file.getvalue())
                 applied = _apply_config_to_state(cfg)
                 if applied:
-                    st.success("設定を反映しました:\n- " + "\n- ".join(applied))
+                    st.success("Config applied:\n- " + "\n- ".join(applied))
                 else:
-                    st.info("反映できる値がありませんでした。")
+                    st.info("No applicable values were found in the config.")
                 st.rerun()
             except Exception as exc:  # pragma: no cover - UI-level error handling
-                st.error(f"Config の読み込みに失敗しました: {exc}")
+                st.error(f"Failed to load config: {exc}")
 
         st.markdown("**Bootstrap**")
         n_boot = st.slider(
@@ -333,8 +362,8 @@ with st.sidebar:
 st.markdown(
     """
 This app runs the same core analysis as the command-line `mechanopharm-infer` workflow.
-入力方法を選んで（デモ / 直接入力 / CSV アップロード）詳細設定を確認したのち、
-**Run analysis** を押してください。
+Choose an input source in the sidebar (bundled demo, direct table input, or CSV upload),
+review the advanced settings, then click **Run analysis**.
 """
 )
 
@@ -354,7 +383,7 @@ elif input_mode == "Upload CSV":
     endpoint_preview_df = _read_csv_safely(endpoint_file)
     timecourse_preview_df = _read_csv_safely(timecourse_file)
     if endpoint_file is None:
-        validation_errors.append("Endpoint CSV: ファイルがアップロードされていません。")
+        validation_errors.append("Endpoint CSV: no file uploaded.")
 else:  # Direct input
     endpoint_preview_df = endpoint_edit_df
     if include_timecourse_direct:
@@ -384,7 +413,7 @@ with prev_cols[0]:
             hide_index=True,
         )
     else:
-        st.caption("（データなし）")
+        st.caption("(no data)")
 with prev_cols[1]:
     st.markdown("**Timecourse (optional)**")
     if timecourse_preview_df is not None and not timecourse_preview_df.empty:
@@ -397,7 +426,7 @@ with prev_cols[1]:
             hide_index=True,
         )
     else:
-        st.caption("（タイムコースなし）")
+        st.caption("(no timecourse)")
 
 if validation_errors:
     for err in validation_errors:
@@ -548,6 +577,6 @@ if run:
                     )
 else:
     if run_disabled:
-        st.info("入力エラーを解消すると **Run analysis** が押せるようになります。")
+        st.info("Resolve the input errors above to enable **Run analysis**.")
     else:
-        st.info("入力を確認し、**Run analysis** を押してください。")
+        st.info("Review your input and click **Run analysis**.")
