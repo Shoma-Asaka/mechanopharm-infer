@@ -2,7 +2,7 @@
 
 `mechanopharm-infer` is a lightweight inference toolkit for
 mechanopharmacology response-landscape analysis.  It is the data-facing
-companion to the theory paper
+companion to the theory paper.
 
 The toolkit extracts the practical fingerprint set defined by the theory
 (`EC50(m)`, `m*(c)`, `c_rev`, `E_peak`, `t_peak`, `E_inf`) from endpoint and
@@ -43,23 +43,22 @@ parameter-identification framework.
 
 ## Theory ↔ code mapping
 
-Every quantity in the table below is reproducible from the code base.  Equation
-numbers refer to the theory paper.
+Every quantity in the table below is reproducible from the code base.
 
-| Theory symbol | Equation | Code entry point | Output column / field |
-|---------------|----------|------------------|-----------------------|
-| `Delta_G(c, m)` | DeltaG | `synthetic.TwoStateParams` | (generator parameters) |
-| `p_1*(c, m)` (two-state) | pstar-explicit | `synthetic.generate_two_state_endpoint` | `response` |
-| `p_1*(c, m)` (three-state) | p1starR | `synthetic.generate_protected_state_endpoint` | `response` |
-| `EC50(m)` | c12 | `fingerprints.ec50_vs_m` | `ec50_vs_m.csv` |
-| `c_rev = -Delta_lambda / Delta_mu` | crev | `fingerprints.mechanical_sign_reversal` | `sign_reversal.csv`, `architecture_call.json :: fingerprint_values.c_rev` |
-| `m*(c)` (two-state, quadratic kappa) | mstar-2state | `fingerprints.find_mechanical_optima` (parabolic refinement) | `mopt_vs_c.csv :: m_opt` |
-| `m*(c)` (three-state) | mstar-opt | `fingerprints.find_mechanical_optima` | `mopt_vs_c.csv :: m_opt` |
-| `E_peak(c, m)` | (theory Sec 4.3) | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: e_peak` |
-| `t_peak(c, m)` | tpeak-rates | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: t_peak` |
-| `E_inf(c, m)` | bmmb-calibration | `fingerprints.endpoint_final_response` | `final_response.csv :: e_inf` |
-| delayed protection (`E_peak - E_inf`) | (theory Sec 4.3) | `fingerprints.delayed_protection_metrics` | `delayed_protection.csv :: attenuation` |
-| architecture call | Sec 5 | `discriminate.discriminate_architecture` | `architecture_call.json :: call` |
+| Theory symbol | Code entry point | Output column / field |
+|---------------|------------------|-----------------------|
+| `Delta_G(c, m)` | `synthetic.TwoStateParams` | (generator parameters) |
+| `p_1*(c, m)` (two-state) | `synthetic.generate_two_state_endpoint` | `response` |
+| `p_1*(c, m)` (three-state) | `synthetic.generate_protected_state_endpoint` | `response` |
+| `EC50(m)` | `fingerprints.ec50_vs_m` | `ec50_vs_m.csv` |
+| `c_rev = -Delta_lambda / Delta_mu` | `fingerprints.mechanical_sign_reversal` | `sign_reversal.csv`, `architecture_call.json :: fingerprint_values.c_rev` |
+| `m*(c)` (two-state, quadratic kappa) | `fingerprints.find_mechanical_optima` (parabolic refinement) | `mopt_vs_c.csv :: m_opt` |
+| `m*(c)` (three-state) | `fingerprints.find_mechanical_optima` | `mopt_vs_c.csv :: m_opt` |
+| `E_peak(c, m)` | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: e_peak` |
+| `t_peak(c, m)` | `fingerprints.peak_metrics_by_condition` | `peak_metrics.csv :: t_peak` |
+| `E_inf(c, m)` | `fingerprints.endpoint_final_response` | `final_response.csv :: e_inf` |
+| delayed protection (`E_peak - E_inf`) | `fingerprints.delayed_protection_metrics` | `delayed_protection.csv :: attenuation` |
+| architecture call | `discriminate.discriminate_architecture` | `architecture_call.json :: call` |
 
 For the full glossary (state labels, evidence-strength ranks, etc.), see
 [`GLOSSARY.md`](GLOSSARY.md).
