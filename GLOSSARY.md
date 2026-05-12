@@ -1,7 +1,7 @@
 # Glossary
 
 This glossary fixes the technical vocabulary used by `mechanopharm-infer` so
-that it remains consistent with the theory paper
+that it remains consistent with the theory paper.
 
 Whenever a name appears in the code base, in CSV outputs, or in
 `architecture_call.json`, it follows the definitions below.
