@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import inspect
 import json
 import sys
 import tempfile
@@ -11,13 +12,37 @@ from typing import Any
 import pandas as pd
 import streamlit as st
 
-# Allow local execution from a source checkout without requiring installation first.
+# Make sure the in-repo `src/` wins over any pip-installed copy of
+# mechanopharm-infer that the hosting environment (e.g. Streamlit Cloud)
+# may have cached from an older release. We aggressively (a) put SRC at
+# the very front of sys.path and (b) drop any already-imported copies so
+# the next import resolves against the current source tree.
 ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "src"
-if SRC.exists() and str(SRC) not in sys.path:
-    sys.path.insert(0, str(SRC))
+if SRC.exists():
+    src_str = str(SRC)
+    if src_str in sys.path:
+        sys.path.remove(src_str)
+    sys.path.insert(0, src_str)
+    for _mod_name in list(sys.modules):
+        if _mod_name == "mechanopharm_infer" or _mod_name.startswith("mechanopharm_infer."):
+            del sys.modules[_mod_name]
 
 from mechanopharm_infer.cli import analyze
+
+# Detect optional keyword arguments so the app still works against older
+# releases of mechanopharm-infer that predate the assay_metadata / thresholds
+# additions.
+_ANALYZE_PARAMS = set(inspect.signature(analyze).parameters)
+_ANALYZE_SUPPORTS_ASSAY_METADATA = "assay_metadata" in _ANALYZE_PARAMS
+_ANALYZE_SUPPORTS_THRESHOLDS = {
+    name: name in _ANALYZE_PARAMS
+    for name in (
+        "ec50_min_dynamic_range",
+        "mopt_prominence_threshold",
+        "delayed_attenuation_threshold",
+    )
+}
 
 
 APP_TITLE = "mechanopharm-infer"
@@ -470,19 +495,37 @@ if run:
             "baseline_definition": baseline_definition,
         }
 
+        analyze_kwargs: dict[str, Any] = {
+            "endpoint_path": str(endpoint_path),
+            "timecourse_path": str(timecourse_path) if timecourse_path else None,
+            "outdir": str(outdir),
+            "n_boot": int(n_boot),
+            "random_seed": int(random_seed),
+        }
+        unsupported: list[str] = []
+        if _ANALYZE_SUPPORTS_ASSAY_METADATA:
+            analyze_kwargs["assay_metadata"] = assay_metadata
+        else:
+            unsupported.append("assay_metadata")
+        for name, value in (
+            ("ec50_min_dynamic_range", float(ec50_min_dynamic_range)),
+            ("mopt_prominence_threshold", float(mopt_prominence_threshold)),
+            ("delayed_attenuation_threshold", float(delayed_attenuation_threshold)),
+        ):
+            if _ANALYZE_SUPPORTS_THRESHOLDS.get(name, False):
+                analyze_kwargs[name] = value
+            else:
+                unsupported.append(name)
+        if unsupported:
+            st.warning(
+                "The installed mechanopharm-infer does not support the "
+                f"following options yet: {unsupported}. They will be ignored "
+                "for this run."
+            )
+
         try:
             with st.spinner("Running mechanopharm-infer analysis..."):
-                analyze(
-                    endpoint_path=str(endpoint_path),
-                    timecourse_path=str(timecourse_path) if timecourse_path else None,
-                    outdir=str(outdir),
-                    n_boot=int(n_boot),
-                    random_seed=int(random_seed),
-                    assay_metadata=assay_metadata,
-                    ec50_min_dynamic_range=float(ec50_min_dynamic_range),
-                    mopt_prominence_threshold=float(mopt_prominence_threshold),
-                    delayed_attenuation_threshold=float(delayed_attenuation_threshold),
-                )
+                analyze(**analyze_kwargs)
         except Exception as exc:  # pragma: no cover - UI-level error handling
             st.error(
                 "Analysis failed. Please check that the input data follows the expected schema."
