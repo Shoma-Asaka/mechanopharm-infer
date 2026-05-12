@@ -3,10 +3,6 @@
 This glossary fixes the technical vocabulary used by `mechanopharm-infer` so
 that it remains consistent with the theory paper
 
-> Shoma Asaka. *A Thermodynamically Constrained Minimal Theory of
-> Mechanopharmacology.* (Manuscript referenced as `b824d030` and the public
-> preprint `3abb4acb`.)
-
 Whenever a name appears in the code base, in CSV outputs, or in
 `architecture_call.json`, it follows the definitions below.
 
