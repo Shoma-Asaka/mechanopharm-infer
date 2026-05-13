@@ -219,6 +219,13 @@ streamlit run apps/streamlit_app.py
 
 And on the public cloud at https://mechanopharm-infer.streamlit.app/.
 
+## Relation to `mechanopharm-minimal`
+
+This repository is distinct from `mechanopharm-minimal`.
+
+- `mechanopharm-minimal` provides a minimal reference implementation for the theory layer.
+- `mechanopharm-infer` focuses on data-facing fingerprint extraction, evidence assembly, uncertainty summaries, and cautious architecture-class inference.
+
 ## Current limitations
 
 - Evidence rules remain conservative and may evolve.
