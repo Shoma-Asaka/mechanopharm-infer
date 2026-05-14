@@ -227,7 +227,7 @@ pip install -e .
 streamlit run apps/streamlit_app.py
 ```
 
-And on the public cloud at https://mechanopharm-infer.streamlit.app/.
+And on the public cloud at https://mechanopharm-infer.streamlit.app.
 
 The web interface provides:
 
