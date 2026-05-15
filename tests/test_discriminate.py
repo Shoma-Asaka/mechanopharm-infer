@@ -179,3 +179,4 @@ def test_build_fingerprint_values_minimal():
     assert payload["c_rev"]["has_reversal"] is True
     assert payload["EC50_vs_m"] == []
     assert payload["m_star_vs_c"] == []
+
