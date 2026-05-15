@@ -9,26 +9,6 @@ The toolkit extracts the practical fingerprint set defined by the theory
 timecourse datasets and assembles them into a conservative architecture-class
 call (two-state vs protected-state).
 
-## Status
-
-Active research prototype at v0.4.0.  The v0.3.0 release introduced
-theory-aligned column names, a direct estimate of the reversal concentration
-`c_rev = -Delta_lambda / Delta_mu`, sub-grid refinement of `m*(c)`,
-state-bias-parametrised synthetic generators, a structured
-`fingerprint_values` payload in `architecture_call.json`, and `--config`
-support in the CLI.  A subsequent v0.3.x patch added three diagnostic plots
-(`dose_response_family.png`, `evidence_summary.png`, `timecourse_panel.png`)
-and introduced persistent results, config import/export, and a structured
-evidence/counterpoints display in the Streamlit interface.
-
-v0.4.0 refines the Streamlit web interface: the table editor now opens blank
-(no pre-populated demo values), the architecture-call result is rendered as a
-plain heading without coloured alert boxes, confidence is displayed as plain
-text, and `timecourse_panel.png` is shown at proportional width alongside the
-other diagnostic figures.
-
-See `GLOSSARY.md` for the canonical vocabulary.
-
 ## What the package does
 
 ```
