@@ -1,16 +1,3 @@
-"""Public API for ``mechanopharm_infer``.
-
-This module exposes the canonical schema loaders, assay-aware preprocessing
-entry points, fingerprint extractors, bootstrap utilities, architecture
-discrimination, and synthetic benchmark tools.
-
-Terminology follows the unified glossary of the theory paper.  See
-``GLOSSARY.md`` and the README "Theory <-> code mapping" section for the
-correspondence between source-code symbols and equations in
-Asaka, *A Thermodynamically Constrained Minimal Theory of
-Mechanopharmacology*.
-"""
-
 __version__ = "0.3.0"
 
 from .bootstrap import (
