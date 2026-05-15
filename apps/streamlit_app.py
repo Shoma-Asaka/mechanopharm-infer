@@ -522,6 +522,11 @@ with st.sidebar:
 
     # Config export
     st.markdown("---")
+    st.markdown("### Citation")
+    st.markdown("If you use this software, please cite the archived release:")
+    st.markdown("[mechanopharm-infer v0.3.0](https://doi.org/10.5281/zenodo.19539760)")
+    
+    st.markdown("---")
     st.markdown("### Export config")
     cfg_content, cfg_filename, cfg_mime = _serialize_config(dict(st.session_state))
     st.download_button(
@@ -531,11 +536,6 @@ with st.sidebar:
         mime=cfg_mime,
         help="Download the current advanced settings as a YAML/JSON file for the CLI or future uploads.",
     )
-
-    st.markdown("---")
-    st.markdown("### Citation")
-    st.markdown("If you use this software, please cite the archived release:")
-    st.markdown("[mechanopharm-infer v0.3.0](https://doi.org/10.5281/zenodo.19539760)")
 
 # ---------------------------------------------------------------------------
 # Main area — intro text
