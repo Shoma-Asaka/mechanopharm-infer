@@ -264,7 +264,7 @@ https://doi.org/10.5281/zenodo.19539760.
 
 ## Acknowledgements
 
-This project was revised with the assistance of `Claude Code` (Anthropic). All AI-generated contributions have been audited and approved by the developers, who maintain full accountability for this release.
+This project was revised with the assistance of `Claude Code`(Anthropic). All AI-generated contributions have been audited and approved by the developers, who maintain full accountability for this release.
 
 ## License
 
